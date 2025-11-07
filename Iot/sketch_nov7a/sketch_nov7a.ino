@@ -90,11 +90,11 @@ void setup() {
   // unless that's what you want...rather, you can batch up a bunch of
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
-
-  testdrawstyles();    // Draw 'stylized' characters
+  testdrawstyles();
 
 }
 void loop(){
+  Key();
 }
 void testdrawstyles(void) {
   display.clearDisplay();
@@ -113,4 +113,12 @@ void testdrawstyles(void) {
 
   display.display();
   delay(2000);
+}
+
+char Key(){
+      char key = keypad.getKey();
+
+  if (key) {
+    Serial.println(key);
+  }
 }
