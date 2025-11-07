@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Keypad.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -44,6 +45,22 @@ static const unsigned char PROGMEM logo_bmp[] =
   0b01111100, 0b11110000,
   0b01110000, 0b01110000,
   0b00000000, 0b00110000 };
+
+#define ROW_NUM     4 // four rows
+#define COLUMN_NUM  4 // four columns
+
+char keys[ROW_NUM][COLUMN_NUM] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'}
+};
+
+byte pin_rows[ROW_NUM]      = {14, 27, 26, 25}; // GPIO19, GPIO18, GPIO5, GPIO17 connect to the row pins
+byte pin_column[COLUMN_NUM] = {33, 32, 35, 34};   // GPIO16, GPIO4, GPIO0, GPIO2 connect to the column pins
+
+Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
+
 
 void setup() {
   Serial.begin(9600);
