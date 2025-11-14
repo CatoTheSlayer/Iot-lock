@@ -1,28 +1,33 @@
-#include <Keypad.h>
+#include <ESP32Servo.h>
 
-#define ROW_NUM     4 // four rows
-#define COLUMN_NUM  4 // four columns
+static const int servoPin = 13;
 
-char keys[ROW_NUM][COLUMN_NUM] = {
-  {'1', '2', '3', 'A'},
-  {'4', '5', '6', 'B'},
-  {'7', '8', '9', 'C'},
-  {'*', '0', '#', 'D'}
-};
-
-byte pin_rows[ROW_NUM]      = {14, 27, 26, 25}; // GPIO19, GPIO18, GPIO5, GPIO17 connect to the row pins
-byte pin_column[COLUMN_NUM] = {33, 32, 35, 34};   // GPIO16, GPIO4, GPIO0, GPIO2 connect to the column pins
-
-Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
+Servo servo1;
 
 void setup() {
   Serial.begin(9600);
-}
+
+  // Attach servo to pin
+  servo1.attach(servoPin);
+} 
 
 void loop() {
-  char key = keypad.getKey();
 
-  if (key) {
-    Serial.println(key);
+  // Drej fra 0° til 90°
+  for(int pos = 0; pos <= 90; pos+=3) {
+    servo1.write(pos);
+    Serial.println(pos);
+    delay(20);
   }
+
+  delay(500); // lille pause
+
+  // Drej fra 90° tilbage til 0°
+  for(int pos =90; pos >= 0; pos-=3) {
+    servo1.write(pos);
+    Serial.println(pos);
+    delay(20);
+  }
+
+  delay(500);
 }
