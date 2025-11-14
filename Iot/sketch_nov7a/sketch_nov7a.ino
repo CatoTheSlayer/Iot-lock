@@ -22,7 +22,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
 #define OLED_RESET  8
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
   &SPI, OLED_DC, OLED_RESET, OLED_CS);
-*/
+*/  
 
 #define NUMFLAKES     10 // Number of snowflakes in the animation example
 
@@ -56,14 +56,14 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'*', '0', '#', 'D'}
 };
 
-byte pin_rows[ROW_NUM]      = {14, 27, 26, 25}; // GPIO19, GPIO18, GPIO5, GPIO17 connect to the row pins
-byte pin_column[COLUMN_NUM] = {33, 32, 35, 34};   // GPIO16, GPIO4, GPIO0, GPIO2 connect to the column pins
+byte pin_rows[ROW_NUM]      = {13, 12, 14, 27}; // GPIO19, GPIO18, GPIO5, GPIO17 connect to the row pins
+byte pin_column[COLUMN_NUM] = {26, 25, 33, 32};   // GPIO16, GPIO4, GPIO0, GPIO2 connect to the column pins
 
 Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC)) {
@@ -90,27 +90,50 @@ void setup() {
   // unless that's what you want...rather, you can batch up a bunch of
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
-
-  testdrawstyles();    // Draw 'stylized' characters
+  testdrawchar();
 
 }
 void loop(){
+   Key();
 }
 void testdrawstyles(void) {
+  char key = keypad.getKey();
+
   display.clearDisplay();
 
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
-  display.setCursor(0,0);             // Start at top-left corner
-  display.println(F("Hello, world!"));
-
-  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
-  display.println(3.141592);
-
-  display.setTextSize(2);             // Draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.print(F("0x")); display.println(0xDEADBEEF, HEX);
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+  display.println(key);
 
   display.display();
   delay(2000);
+}
+
+void testdrawchar(void) {
+  display.clearDisplay();
+
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+
+  // Not all the characters will fit on the display. This is normal.
+  // Library will draw what it can and the rest will be clipped.
+  for(int16_t i=0; i<256; i++) {
+    if(i == '\n') display.write(' ');
+    else          display.write(i);
+  }
+
+  display.display();
+  delay(2000);
+}
+
+void Key(){
+  char key = keypad.getKey();
+
+  if (key) {
+    testdrawstyles();
+    Serial.println(key);
+  }
 }
