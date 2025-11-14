@@ -4,6 +4,7 @@
 #include <Adafruit_SSD1306.h>
 #include <Keypad.h>
 
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
 
@@ -61,6 +62,11 @@ byte pin_column[COLUMN_NUM] = {26, 25, 33, 32};   // GPIO16, GPIO4, GPIO0, GPIO2
 
 Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
 
+char userInput[4];
+int userInputCount = 0;
+char password[4] = {'1','2','3','4'};
+bool flag = false;
+bool correct = false;
 
 void setup() {
   Serial.begin(115200);
@@ -90,24 +96,65 @@ void setup() {
   // unless that's what you want...rather, you can batch up a bunch of
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
-  testdrawchar();
 
 }
 void loop(){
+  if (flag == false){
    Key();
-}
-void testdrawstyles(void) {
-  char key = keypad.getKey();
-
+   delay(100);
+  }
+  if (flag == true){
   display.clearDisplay();
 
   display.setTextSize(1);      // Normal 1:1 pixel scale
   display.setTextColor(SSD1306_WHITE); // Draw white text
   display.setCursor(0, 0);     // Start at top-left corner
-  display.println(key);
+  display.println(F("Wrong input, pleas \ntry again"));
+
+  // Reset all elements to 0
+  for (int i = 0; i < 4; i++){
+   userInput[i] = 0;
+  }
+  userInputCount = 0;
 
   display.display();
   delay(2000);
+  flag = false;
+  }
+
+}
+void testdrawstyles(char key) {
+  display.clearDisplay();
+
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+  display.print(key);
+  Serial.println(key);
+
+  display.display();
+  //delay(2000);
+
+  userInput[userInputCount++] = key;
+  if (userInputCount == 4) {
+    //Skriv et for loop hvor alle individuelle værdier i arrayet tjekkes.
+    for (int i = 0; i < 4; i++){
+      if(userInput[i] != password[i]){
+        flag = true;
+      }
+    }
+    if (flag == false){
+    delay(100);
+    display.setTextSize(1);      // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE); // Draw white text
+    display.setCursor(0, 0);     // Start at top-left corner
+    display.print("correct it is now open");
+    display.display();
+    }
+  }
+//Indsæt kode til servo motor samt en audit log,
+
 }
 
 void testdrawchar(void) {
@@ -133,7 +180,7 @@ void Key(){
   char key = keypad.getKey();
 
   if (key) {
-    testdrawstyles();
-    Serial.println(key);
+    testdrawstyles(key);
+    
   }
 }
