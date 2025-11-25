@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="refresh" content="60">
-    <title>Temp/Humidity</title>
+    <title>User</title>
     <script src="Chart.bundle.min.js"></script>
    
 </head>
@@ -17,16 +17,16 @@ End: <input type="datetime-local" name="enddate" id="enddate" />
 
 
 <br/>
-<<anvas id="temperature" style="width:100%; height:400px;">
+<<anvas id="user" style="width:100%; height:400px;">
 <script>
-    var ctx = document.getElementById("temperature");
+    var ctx = document.getElementById("user");
     var config = {
         type: 'line',
 
         data: {
             labels:,
             datasets:[{
-                label:'Temperature',
+                label:'user',
                 fill:false,
                 borderColor:'rgba(154,21,7,1)',
                 data:,
@@ -37,7 +37,7 @@ End: <input type="datetime-local" name="enddate" id="enddate" />
             responsive:false,
             title:{
                 display:true,
-                text:'Temperature',
+                text:'user Log Over Time',
             },
             scales: {
                 xAxes: [{
@@ -48,35 +48,7 @@ End: <input type="datetime-local" name="enddate" id="enddate" />
     };
 
 
-        window.temperatureChart = new Chart(ctx, config);
+        window.User = new Chart(ctx, config);
 </script>
-<canvas id="humidity" style="width:100%; height:400px;"></canvas>
-<script>
-    var ctx = document.getElementById("humidity");
-    var config = {
-        type: 'line',
-        data: {
-            labels:,
-            datasets:[{
-                label:'Humidity',
-                fill:false,
-                borderColor:'rgba(7,42,154,1)',
-                data:,
-
-            }]
-        },
-        options: {
-            responsive:false,
-            title:{
-                display:true,
-                text:'Humidity',
-            }
-        }
-    };
-
-
-    window.humidityChart = new Chart(ctx, config);
-</script>
-
 </body>
 </html>

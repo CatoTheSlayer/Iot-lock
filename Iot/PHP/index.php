@@ -1,8 +1,9 @@
 <!doctype html>
+<include 
 <html>
     <body>
         <div>
-         <a> href="chart.php">View Charts  </a>
+         <a>href="chart.php">View Charts</a>
          </div>
     </body>
 </html>
