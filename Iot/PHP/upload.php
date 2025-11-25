@@ -42,7 +42,7 @@ include('config.php');
     $logdate = date("Y-m-d H:i:s");
 
 
-    $insertSQL="INSERT into ".TB_ENV." (logdate,user,id) values ('".$logdate.",".$user", ".$id"')";
+    $insertSQL="INSERT into ".TB_ENV." (logdate, user, id) values ('".$logdate."',".$user", ".$id")";
     mysqli_query($conn,$insertSQL) or die("INSERT Query has Failed - ".$insertSQL );
 
 ?>
