@@ -106,9 +106,9 @@ $conn->close();
         <!-- TABLE CONSTRUCTION -->
         <table>
             <tr>
-                <th>User</th>
                 <th>ID</th>
                 <th>LogDate</th>
+                <th>User</th>
             </tr>
             <!-- PHP CODE TO FETCH DATA FROM ROWS -->
             <?php 
