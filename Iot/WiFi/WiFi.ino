@@ -9,25 +9,16 @@ const char* password = "Cato0422";
 void setup()
 {
   Serial.begin(115200);
+  if (WiFiEnterprise.begin(ssid, username, password, true)) {
+    Serial.println("Connected successfully!");
+    Serial.print("IP Address: ");
+    Serial.println(WiFiEnterprise.localIP());
+  } else {
+    Serial.println("Connection failed!");
+  }
 }
 
 void loop(){
-  wifi_setup();
+  
 }
 
-bool wifi_setup(const char *ssid, const char *username, const char *password)
-{
-    WiFiEnterprise.end();
-    if (WiFiEnterprise.begin(ssid, username, password))
-    {
-        Serial.println("WiFi connected");
-        Serial.println(WiFiEnterprise.localIP());
-        return true;
-    }
-    else
-    {
-        Serial.println("WiFi connection failed");
-        Serial.println(WiFiEnterprise.status());
-        return false;
-    }
-} 
