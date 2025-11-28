@@ -1,5 +1,6 @@
 <?php
 include('config.php');
+Date_default_timezone_set('Europe/Copenhagen');
     $conn =  mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD,DB_NAME) or die("Unable to connect to MySQL");
     //0: temperature
     //1: humidity

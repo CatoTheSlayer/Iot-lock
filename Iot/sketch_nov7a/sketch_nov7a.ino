@@ -49,6 +49,11 @@ static const unsigned char PROGMEM logo_bmp[] =
 
 #define ROW_NUM     4 // four rows
 #define COLUMN_NUM  4 // four columns
+#include <WiFiEnterprise.h>
+#include <WiFi.h>
+#include <esp_eap_client.h>
+#include <HTTPClient.h>
+#define RETRY_LIMIT  20
 
 char keys[ROW_NUM][COLUMN_NUM] = {
   {'1', '2', '3', 'A'},
@@ -67,6 +72,11 @@ int userInputCount = 0;
 char password[4] = {'1','2','3','4'};
 bool flag = false;
 bool correct = false;
+float user = 1;
+float id = 1;
+const char* ssid = "LMH WiFi";
+const char* username = "lmh23ihch";
+const char* password = "Cato0422";
 
 void setup() {
   Serial.begin(115200);
@@ -96,7 +106,13 @@ void setup() {
   // unless that's what you want...rather, you can batch up a bunch of
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
-
+  if (WiFiEnterprise.begin(ssid, username, password, true)) {
+    Serial.println("Connected successfully!");
+    Serial.print("IP Address: ");
+    Serial.println(WiFiEnterprise.localIP());
+  } else {
+    Serial.println("Connection failed!");
+  }
 }
 void loop(){
   if (flag == false){
@@ -123,7 +139,7 @@ void loop(){
   }
 
 }
-void testdrawstyles(char key) {
+void PassKey(char key) {
   display.clearDisplay();
 
   display.setTextSize(1);      // Normal 1:1 pixel scale
@@ -151,36 +167,45 @@ void testdrawstyles(char key) {
     display.setCursor(0, 0);     // Start at top-left corner
     display.print("correct it is now open");
     display.display();
+    int rtl = RETRY_LIMIT;
+    delay(500);
+    
+    //Open a connection to the server
+    HTTPClient http;
+    http.begin("https://lmh-hx2-hold1.dk/lmh23ihch/upload.php");
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    //format your POST request.
+    int httpResponseCode = http.POST("user=" + String(user) + "&id=" + String(id));
+
+    if (httpResponseCode >0){
+        //check for a return code - This is more for debugging.
+      String response = http.getString();
+      Serial.println(httpResponseCode);
+      Serial.println(response);
+    }
+    else{
+      Serial.print("Error on sending post");
+      Serial.println(httpResponseCode);
+    }
+    //closde the HTTP request.
+    http.end();
+  
+    //Monitor values in console for debugging.
+    Serial.println("User = " + String(user));
+    Serial.println("id = " + String(id));
+    id + 1;
+    Key();
     }
   }
-//Indsæt kode til servo motor samt en audit log,
+//Indsæt kode til servo motor
 
-}
-
-void testdrawchar(void) {
-  display.clearDisplay();
-
-  display.setTextSize(1);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(0, 0);     // Start at top-left corner
-  display.cp437(true);         // Use full 256 char 'Code Page 437' font
-
-  // Not all the characters will fit on the display. This is normal.
-  // Library will draw what it can and the rest will be clipped.
-  for(int16_t i=0; i<256; i++) {
-    if(i == '\n') display.write(' ');
-    else          display.write(i);
-  }
-
-  display.display();
-  delay(2000);
 }
 
 void Key(){
   char key = keypad.getKey();
 
   if (key) {
-    testdrawstyles(key);
+    PassKey(key);
     
   }
 }
