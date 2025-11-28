@@ -30,7 +30,7 @@ void loop(){
       http.begin("https://lmh-hx2-hold1.dk/lmh23ihch/upload.php");
       http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     //format your POST request.
-      int httpResponseCode = http.POST("user=" + String(t) + "id=" + String(g));
+      int httpResponseCode = http.POST("user=" + String(t) + "&id=" + String(g));
 
       if (httpResponseCode >0){
           //check for a return code - This is more for debugging.
