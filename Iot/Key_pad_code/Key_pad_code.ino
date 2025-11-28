@@ -1,6 +1,6 @@
 #include <ESP32Servo.h>
 
-static const int servoPin = 13;
+static const int servoPin = 22;
 
 Servo servo1;
 
@@ -12,22 +12,10 @@ void setup() {
 } 
 
 void loop() {
-
-  // Drej fra 0° til 90°
-  for(int pos = 0; pos <= 90; pos+=3) {
-    servo1.write(pos);
-    Serial.println(pos);
-    delay(20);
-  }
-
-  delay(500); // lille pause
-
-  // Drej fra 90° tilbage til 0°
-  for(int pos =90; pos >= 0; pos-=3) {
-    servo1.write(pos);
-    Serial.println(pos);
-    delay(20);
-  }
-
-  delay(500);
+  //90 er låst
+  //0 er åben
+      servo1.write(90);
+      delay(1050);
+      servo1.write(0);
+      delay(250);
 }

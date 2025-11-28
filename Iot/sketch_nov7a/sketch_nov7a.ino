@@ -4,7 +4,10 @@
 #include <Adafruit_SSD1306.h>
 #include <Keypad.h>
 #include <ESP32Servo.h>
-using namespace std;
+#include <WiFiEnterprise.h>
+#include <WiFi.h>
+#include <esp_eap_client.h>
+#include <HTTPClient.h>
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -19,16 +22,7 @@ using namespace std;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
   OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
-/* Comment out above, uncomment this block to use hardware SPI
-#define OLED_DC     6
-#define OLED_CS     7
-#define OLED_RESET  8
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
-  &SPI, OLED_DC, OLED_RESET, OLED_CS);
-*/  
-
 #define NUMFLAKES     10 // Number of snowflakes in the animation example
-
 #define LOGO_HEIGHT   16
 #define LOGO_WIDTH    16
 static const unsigned char PROGMEM logo_bmp[] =
@@ -51,10 +45,6 @@ static const unsigned char PROGMEM logo_bmp[] =
 
 #define ROW_NUM     4 // four rows
 #define COLUMN_NUM  4 // four columns
-#include <WiFiEnterprise.h>
-#include <WiFi.h>
-#include <esp_eap_client.h>
-#include <HTTPClient.h>
 #define RETRY_LIMIT  20
 
 char keys[ROW_NUM][COLUMN_NUM] = {
@@ -79,7 +69,7 @@ float id = 1;
 const char* ssid = "LMH WiFi";
 const char* username = "lmh23ihch";
 const char* Password = "Cato0422";
-static const int servoPin = 2;
+static const int servoPin = 22;
 Servo servo1;
 
 void setup() {
@@ -126,32 +116,12 @@ void loop(){
    delay(100);
   }
   if (flag == true){
-  display.clearDisplay();
-
-  display.setTextSize(1);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(0, 0);     // Start at top-left corner
-  display.println(F("Wrong input, pleas \ntry again"));
-
-  // Reset all elements to 0
-  for (int i = 0; i < 4; i++){
-   userInput[i] = 0;
-  }
-  userInputCount = 0;
-
-  display.display();
-  delay(2000);
-  flag = false;
-  Key();
+    WasFalse();
   }
 
 }
 void PassKey(char key) {
-  display.clearDisplay();
-
-  display.setTextSize(1);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(0, 0);     // Start at top-left corner
+  ScreenSetUp();
   display.cp437(true);         // Use full 256 char 'Code Page 437' font
   display.print(key);
   Serial.println(key);
@@ -168,56 +138,93 @@ void PassKey(char key) {
       }
     }
     if (flag == false){
-    delay(100);
-    display.setTextSize(1);      // Normal 1:1 pixel scale
-    display.setTextColor(SSD1306_WHITE); // Draw white text
-    display.setCursor(0, 0);     // Start at top-left corner
-    display.print("correct it is now open");
-    display.display();
-    int rtl = RETRY_LIMIT;
-    delay(500);
+      delay(100);
+      ScreenSetUp();
+      display.print("correct it is now open");
+      display.display();
+      int rtl = RETRY_LIMIT;
+      delay(500);
+      
+      //Open a connection to the server
+      HTTPClient http;
+      http.begin("https://lmh-hx2-hold1.dk/lmh23ihch/upload.php");
+      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+      //format your POST request.
+      int httpResponseCode = http.POST("user=" + String(user) + "&id=" + String(id));
+
+      if (httpResponseCode >0){
+          //check for a return code - This is more for debugging.
+        String response = http.getString();
+        Serial.println(httpResponseCode);
+        Serial.println(response);
+      }
+      else{
+        Serial.print("Error on sending post");
+        Serial.println(httpResponseCode);
+      }
+      //closde the HTTP request.
+      http.end();
     
-    //Open a connection to the server
-    HTTPClient http;
-    http.begin("https://lmh-hx2-hold1.dk/lmh23ihch/upload.php");
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    //format your POST request.
-    int httpResponseCode = http.POST("user=" + String(user) + "&id=" + String(id));
+      //Monitor values in console for debugging.
+      Serial.println("User = " + String(user));
+      Serial.println("id = " + String(id));
+      id++;
+      servo1.write(0);
+        for (int i = 0; i < 4; i++){
+          userInput[i] = 0;
+        }
+      userInputCount = 0;
 
-    if (httpResponseCode >0){
-        //check for a return code - This is more for debugging.
-      String response = http.getString();
-      Serial.println(httpResponseCode);
-      Serial.println(response);
-    }
-    else{
-      Serial.print("Error on sending post");
-      Serial.println(httpResponseCode);
-    }
-    //closde the HTTP request.
-    http.end();
-  
-    //Monitor values in console for debugging.
-    Serial.println("User = " + String(user));
-    Serial.println("id = " + String(id));
-    id + 1;
-    for(int pos = 0; pos <= 90; pos+=3) {
-     servo1.write(pos);
-     Serial.println(pos);
-     delay(20);
-  }
-    Key();
-    }
-  }
-//Indsæt kode til servo motor
+      delay(12000);
+      //make some kind of, click this to lock insted of delay
+      servo1.write(90);
 
-}
+    }  
+   }
+  }
 
 void Key(){
   char key = keypad.getKey();
 
   if (key) {
     PassKey(key);
-    
+    if (Locked()=true){
+      servo1.write(90);
+    }
   }
+}
+
+void WasFalse(){
+  ScreenSetUp();
+  display.println(F("Wrong input, pleas \ntry again"));
+
+  // Reset all elements to 0
+  for (int i = 0; i < 4; i++){
+   userInput[i] = 0;
+  }
+  userInputCount = 0;
+
+  display.display();
+
+  servo1.write(90);
+  delay(2000);
+  flag = false;
+  Key();
+}
+
+void ScreenSetUp(){
+  display.clearDisplay();
+
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+}
+
+bool Locked(char key){
+ if(key = '#'){
+   return true;
+ }
+ else{
+  return false;
+ }
 }
