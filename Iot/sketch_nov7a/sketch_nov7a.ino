@@ -3,6 +3,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Keypad.h>
+#include <ESP32Servo.h>
+using namespace std;
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -76,11 +78,13 @@ float user = 1;
 float id = 1;
 const char* ssid = "LMH WiFi";
 const char* username = "lmh23ihch";
-const char* password = "Cato0422";
+const char* Password = "Cato0422";
+static const int servoPin = 2;
+Servo servo1;
 
 void setup() {
   Serial.begin(115200);
-
+  servo1.attach(servoPin);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -106,13 +110,15 @@ void setup() {
   // unless that's what you want...rather, you can batch up a bunch of
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
-  if (WiFiEnterprise.begin(ssid, username, password, true)) {
+  if (WiFiEnterprise.begin(ssid, username, Password, true)) {
     Serial.println("Connected successfully!");
     Serial.print("IP Address: ");
     Serial.println(WiFiEnterprise.localIP());
   } else {
     Serial.println("Connection failed!");
   }
+  
+
 }
 void loop(){
   if (flag == false){
@@ -136,6 +142,7 @@ void loop(){
   display.display();
   delay(2000);
   flag = false;
+  Key();
   }
 
 }
@@ -194,6 +201,11 @@ void PassKey(char key) {
     Serial.println("User = " + String(user));
     Serial.println("id = " + String(id));
     id + 1;
+    for(int pos = 0; pos <= 90; pos+=3) {
+     servo1.write(pos);
+     Serial.println(pos);
+     delay(20);
+  }
     Key();
     }
   }
