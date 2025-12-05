@@ -71,7 +71,6 @@ const char* username = "lmh23ihch";
 const char* Password = "Cato0422";
 static const int servoPin = 22;
 Servo servo1;
-bool lock = false;
 
 void setup() {
   Serial.begin(115200);
@@ -186,15 +185,12 @@ void PassKey(char key) {
 
 void Key(){
   char key = keypad.getKey();
-  lock = Locked(key);
 
   if (key) {
     PassKey(key);
-  }
-  if (lock){
-    servo1.write(90);
-    Serial.print("hello");
-    lock = false;
+    if (Locked()=true){
+      servo1.write(90);
+    }
   }
 }
 
@@ -225,9 +221,9 @@ void ScreenSetUp(){
 }
 
 bool Locked(char key){
-  if(key == '#'){
+ if(key = '#'){
    return true;
-  }
+ }
  else{
   return false;
  }
