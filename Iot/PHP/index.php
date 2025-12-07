@@ -1,49 +1,6 @@
-<!--<!doctype html>
-<html>
-    <body>
-        <div>
-         <a>
-            <link
-            href="chart.php" target="_blank">
-            <table id="table" class="table table-hover table-mc-light-blue">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Id</th>
-                        <th>LogDate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td data-title="user"><?php //echo $rows["user"]?></td>
-                    <td data-title="id"><?php //echo $rows["id"]?></td>
-                    <td data-title="logdate"><?php //echo $rows["logdate"]?></td>
-                    </tr>
-                </tbody>
-            </table>
-         </a>
-        </div>
-    </body>
-</html>
--->
-
-<!-- PHP code to establish connection with the localserver -->
 <?php
 include('config.php');
 
-// Username is root
-/*$user = 'lmh_hx2_hold1_dk';
-$password = 'jzWw4yZ7P6D33stxqA4X6no5';
-
-// Database name is geeksforgeeks
-$database = 'lmh-hx2-hold1.dk.mysql';
-
-// Server is localhost with
-// port number 3306
-$servername='lmh_hx2_hold1_dk:22';
-$ENV='IoT_Lock';
-$conn = new$conn($servername, $user, $password, $database, $ENV,);
-*/
 $conn =  mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD,DB_NAME) or die("Unable to connect to MySQL");
 
 // Checking for connections
